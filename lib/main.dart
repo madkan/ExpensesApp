@@ -1,37 +1,84 @@
-import 'package:ExpensesApp/widgets/user_transaction.dart';
 import 'package:flutter/material.dart';
+import './models/transaction.dart';
+import './widgets/new_transaction.dart';
+import './widgets/transaction_list.dart';
 
 void main() {
-  runApp(ExpensesApp());
+  runApp(MyApp());
 }
 
-//class ExpensesApp extends StatefulWidget {
-//  State<StatefulWidget> createstate() {
-//    return _ExpensesAppState();
-//  }
-//}
-
-class ExpensesApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Expenses App',
-      home: MyHomePage(),
+      title: 'My Expenses',
+      home: ExpensesApp(),
+      theme: ThemeData(primarySwatch: Colors.purple),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  //String textInput;
-  //String amountInput;
-  final textControl = TextEditingController();
-  final amountControl = TextEditingController();
+class ExpensesApp extends StatefulWidget {
+  State<StatefulWidget> createState() {
+    return _ExpensesAppState();
+  }
+}
 
+class _ExpensesAppState extends State<ExpensesApp> {
+  final List<Transaction> _userTransaction = [
+    Transaction(
+      id: 't1',
+      title: 'new shoes',
+      amount: 1670,
+      date: DateTime.now(),
+    ),
+    Transaction(
+      id: 't2',
+      title: 'watch',
+      amount: 2550,
+      date: DateTime.now(),
+    ),
+  ];
+
+  void _addnewTransaction(String txTitle, double txAmount) {
+    final newtx = Transaction(
+      title: txTitle,
+      amount: txAmount,
+      date: DateTime.now(),
+      id: DateTime.now().toString(),
+    );
+    setState(() {
+      _userTransaction.add(newtx);
+    });
+  }
+
+  void _openAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      builder: (_) {
+        return GestureDetector(
+          onTap: () {},
+          child: NewTransaction(_addnewTransaction),
+          behavior: HitTestBehavior.opaque,
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('ExpensesApp'),
-        ),
-        body: SingleChildScrollView(
+      appBar: AppBar(
+        title: Text('Expenses App'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => _openAddNewTransaction(context),
+          )
+        ],
+      ),
+      body: Column(children: [
+        SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -43,9 +90,16 @@ class MyHomePage extends StatelessWidget {
                 ),
                 elevation: 5,
               ),
-              UserTransaction(),
             ],
           ),
-        ));
+        ),
+        TransactionList(_userTransaction),
+      ]),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _openAddNewTransaction(context),
+      ),
+    );
   }
 }
