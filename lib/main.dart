@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './models/transaction.dart';
 import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
+import './widgets/chart.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,19 +27,29 @@ class ExpensesApp extends StatefulWidget {
 
 class _ExpensesAppState extends State<ExpensesApp> {
   final List<Transaction> _userTransaction = [
-    Transaction(
-      id: 't1',
-      title: 'new shoes',
-      amount: 1670,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: 't2',
-      title: 'watch',
-      amount: 2550,
-      date: DateTime.now(),
-    ),
+    //Transaction(
+    //  id: 't1',
+    //  title: 'new shoes',
+    //  amount: 1670,
+    //  date: DateTime.now(),
+    //),
+    //Transaction(
+    //  id: 't2',
+    //  title: 'watch',
+    //  amount: 2550,
+    //  date: DateTime.now(),
+    //),
   ];
+
+  List<Transaction> get _recentTransaction {
+    return _userTransaction.where((tx) {
+      return tx.date.isAfter(
+        DateTime.now().subtract(
+          Duration(days: 7),
+        ),
+      );
+    }).toList();
+  }
 
   void _addnewTransaction(String txTitle, double txAmount) {
     final newtx = Transaction(
@@ -80,20 +91,14 @@ class _ExpensesAppState extends State<ExpensesApp> {
       body: Column(children: [
         SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            //mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Card(
-                color: Colors.blueAccent,
-                child: Container(
-                  width: double.infinity,
-                  child: Text('CHART 1'),
-                ),
-                elevation: 5,
-              ),
+              Chart(_recentTransaction),
+              TransactionList(_userTransaction),
             ],
           ),
         ),
-        TransactionList(_userTransaction),
       ]),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
